@@ -190,11 +190,11 @@ export default function WatchScreen() {
                         <Text style={styles.qualityDropdownTitle}>Video Quality</Text>
                         {[...streamData.sources]
                             .sort((a, b) => (parseInt(b.resolution) || 0) - (parseInt(a.resolution) || 0))
-                            .map(source => {
+                            .map((source, index) => {
                             const isSelected = selectedResolution === source.resolution;
                             return (
                                 <Pressable
-                                    key={source.resolution}
+                                    key={`${source.resolution}-${index}`}
                                     style={[styles.qualityOption, isSelected && styles.qualityOptionActive]}
                                     onPress={() => handleSelectQuality(source.resolution)}
                                 >

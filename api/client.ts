@@ -25,8 +25,8 @@ export const apiClient = {
         return result;
     },
 
-    searchAnime: async (query: string): Promise<PaginatedResponse<AnimeBasic>> => {
-        const response = await api.get(`${API_ENDPOINTS.search}?q=${encodeURIComponent(query)}`);
+    searchAnime: async (query: string, page: number = 1): Promise<PaginatedResponse<AnimeBasic>> => {
+        const response = await api.get(`${API_ENDPOINTS.search}?q=${encodeURIComponent(query)}&page=${page}`);
         return response.data;
     },
 

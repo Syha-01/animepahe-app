@@ -12,18 +12,65 @@ export default function SearchScreen() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<AnimeBasic[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
   const router = useRouter();
 
   const handleSearch = async () => {
     if (!query.trim()) return;
+    
+    // Reset state for new search
     setLoading(true);
+    setPage(1);
+    setHasMore(true);
+    
     try {
-      const data = await apiClient.searchAnime(query);
-      setResults(data.data);
+      const data = await apiClient.searchAnime(query, 1);
+      setResults(data.data || []);
+      
+      // Animepahe latest api pattern
+      if (data.paginationInfo && data.paginationInfo.lastPage <= 1) {
+          setHasMore(false);
+      } else if (data.last_page && data.last_page <= 1) {
+          setHasMore(false);
+      } else if (!data.data || data.data.length === 0) {
+          setHasMore(false);
+      }
     } catch (err) {
       console.error(err);
+      setResults([]);
+      setHasMore(false);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMore = async () => {
+    if (loadingMore || !hasMore || loading || !query.trim()) return;
+
+    setLoadingMore(true);
+    const nextPage = page + 1;
+    
+    try {
+      const data = await apiClient.searchAnime(query, nextPage);
+      if (data.data && data.data.length > 0) {
+        setResults((prev) => [...prev, ...data.data]);
+        setPage(nextPage);
+      }
+      
+      if (data.paginationInfo && data.paginationInfo.lastPage <= nextPage) {
+        setHasMore(false);
+      } else if (data.last_page && data.last_page <= nextPage) {
+        setHasMore(false);
+      } else if (!data.data || data.data.length === 0) {
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error('Error loading more search results:', err);
+      setHasMore(false);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -48,7 +95,7 @@ export default function SearchScreen() {
             returnKeyType="search"
           />
           {query.length > 0 && (
-            <Pressable onPress={() => setQuery('')}>
+            <Pressable onPress={() => { setQuery(''); setResults([]); }}>
               <Ionicons name="close-circle" size={18} color={colors.textMuted} />
             </Pressable>
           )}
@@ -62,11 +109,18 @@ export default function SearchScreen() {
       ) : (
         <FlatList
           data={results}
-          keyExtractor={(item) => item.session}
+          keyExtractor={(item, index) => `${item.session}-${index}`}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            loadingMore ? (
+              <ActivityIndicator style={{ paddingVertical: spacing.lg }} size="small" color={colors.primary} />
+            ) : null
+          }
           renderItem={({ item }) => (
             <AnimeCard anime={item} onPress={navigateToDetails} />
           )}
