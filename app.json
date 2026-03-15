@@ -44,6 +44,19 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "648c4263-7c35-4dc4-b030-c4ded4af786c"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/648c4263-7c35-4dc4-b030-c4ded4af786c"
+    },
+    "owner": "syha-01"
   }
 }

@@ -139,7 +139,7 @@ export default function WatchScreen() {
                     <VideoView 
                         player={player}
                         style={styles.video} 
-                        allowsFullscreen
+                        fullscreenOptions={{ enable: true }}
                         allowsPictureInPicture
                         contentFit="contain"
                     />
