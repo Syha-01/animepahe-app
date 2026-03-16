@@ -179,7 +179,7 @@ export default function AnimeDetailsScreen() {
                             </View>
                         )}
                         <View style={styles.episodeInfo}>
-                            <Text style={styles.episodeTitle}>Episode {item.number}</Text>
+                            <Text style={styles.episodeTitle}>Episode {item.episode || item.number || '?'}</Text>
                             <Text style={styles.episodeSubtitle}>{item.duration || '24m'}</Text>
                         </View>
 

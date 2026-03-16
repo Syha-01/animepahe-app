@@ -27,7 +27,8 @@ export interface AnimeDetails extends AnimeBasic {
 
 export interface Episode {
     id: string; // The episode ID
-    number: number;
+    number?: number;
+    episode?: number;
     title: string;
     created_at: string;
     session: string;
